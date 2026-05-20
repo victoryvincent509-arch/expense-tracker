@@ -30,8 +30,8 @@ const SignUp = () => {
 
     try {
       const user = await signUpWithEmail(email, password);
-      // Force a page reload to update the auth context
-      window.location.reload();
+// Force redirect to home
+window.location.href = '/';
     } catch (error) {
       setError(error.message);
     } finally {
