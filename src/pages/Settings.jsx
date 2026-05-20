@@ -1,21 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { logout } from '../localStorage/auth';
 
 const Settings = () => {
-    const { currentUser } = useAuth();
-    const navigate = useNavigate();
     const [showClearConfirm, setShowClearConfirm] = useState(false);
-
-    const handleSignOut = async () => {
-        try {
-            await logout();
-            window.location.reload();
-        } catch (error) {
-            console.error('Error signing out:', error);
-        }
-    };
 
     const handleClearAllData = () => {
         localStorage.removeItem('expense_tracker_expenses');
@@ -29,26 +15,7 @@ const Settings = () => {
         <div className="max-w-lg mx-auto px-4 py-6">
             <div className="mb-6">
                 <h1 className="text-2xl font-bold text-gray-800 mb-2">Settings</h1>
-                <p className="text-gray-600">Manage your account and data</p>
-            </div>
-
-            {/* Account Section */}
-            <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4">
-                <h2 className="text-lg font-semibold text-gray-800 mb-4">Account</h2>
-
-                <div className="space-y-3">
-                    <div>
-                        <p className="text-sm text-gray-500 mb-1">Email</p>
-                        <p className="text-gray-800 font-medium">{currentUser?.email}</p>
-                    </div>
-
-                    <button
-                        onClick={handleSignOut}
-                        className="w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-200 font-medium"
-                    >
-                        Sign Out
-                    </button>
-                </div>
+                <p className="text-gray-600">Manage your data</p>
             </div>
 
             {/* Data Management Section */}

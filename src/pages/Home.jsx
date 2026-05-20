@@ -6,7 +6,6 @@ import { formatDate, getDateRange } from '../utils/dateUtils';
 import { formatCurrency } from '../utils/currencyUtils';
 
 const Home = () => {
-  const { currentUser } = useAuth();
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(null);
@@ -20,12 +19,11 @@ const Home = () => {
   const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
-    if (!currentUser) return;
 
     setLoading(true);
 
     // Set up real-time listener
-    const unsubscribe = subscribeToExpenses(currentUser.uid, (data) => {
+    const unsubscribe = subscribeToExpenses('default-user', (data) => {
       setExpenses(data);
       setLoading(false);
     }, filters);
