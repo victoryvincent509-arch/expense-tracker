@@ -25,7 +25,7 @@ const Stats = () => {
 
   useEffect(() => {
     fetchData();
-  }, [currentUser]);
+ }, []);
 
   const fetchData = async () => {
 
