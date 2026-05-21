@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
 import { subscribeToExpenses, deleteExpense } from '../localStorage/firestore';
 import { CATEGORIES, CATEGORY_COLORS, FILTER_PERIODS, getCategoryColor } from '../utils/constants';
 import { formatDate, getDateRange } from '../utils/dateUtils';
@@ -29,7 +28,7 @@ const Home = () => {
     }, filters);
 
     return () => unsubscribe();
-  }, [currentUser, filters]);
+  }, [filters]);
 
   const handleDeleteClick = (expense) => {
     setDeleteConfirm(expense);
