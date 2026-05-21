@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { subscribeToExpenses, deleteExpense } from '../localStorage/firestore';
 import { CATEGORIES, CATEGORY_COLORS, FILTER_PERIODS, getCategoryColor } from '../utils/constants';
 import { formatDate, getDateRange } from '../utils/dateUtils';
 import { formatCurrency } from '../utils/currencyUtils';
 
 const Home = () => {
+  const { currentUser } = useAuth();
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(null);
@@ -18,17 +20,18 @@ const Home = () => {
   const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
+    if (!currentUser) return;
 
     setLoading(true);
 
     // Set up real-time listener
-    const unsubscribe = subscribeToExpenses('default-user', (data) => {
+    const unsubscribe = subscribeToExpenses(currentUser.uid, (data) => {
       setExpenses(data);
       setLoading(false);
     }, filters);
 
     return () => unsubscribe();
-  }, [filters]);
+  }, [currentUser, filters]);
 
   const handleDeleteClick = (expense) => {
     setDeleteConfirm(expense);

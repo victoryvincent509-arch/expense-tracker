@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { addExpense } from '../localStorage/firestore';
 import { CATEGORIES } from '../utils/constants';
 import { getTodayString, formatDate } from '../utils/dateUtils';
 import { getUserExpenses } from '../localStorage/firestore';
 const Add = () => {
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
   const [allCategories, setAllCategories] = useState(CATEGORIES);
   const [formData, setFormData] = useState({
@@ -17,7 +19,9 @@ const Add = () => {
   });
   useEffect(() => {
     const fetchCategories = async () => {
-      const expenses = await getUserExpenses('default-user');
+      if (!currentUser) return;
+
+      const expenses = await getUserExpenses(currentUser.uid);
       const usedCategories = [...new Set(expenses.map(e => e.category))];
       const combined = [...new Set([...CATEGORIES, ...usedCategories])];
       // Sort alphabetically, but keep "Other" at the end
@@ -29,7 +33,7 @@ const Add = () => {
     };
 
     fetchCategories();
-  }, []);
+  }, [currentUser]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -72,7 +76,7 @@ const Add = () => {
 
     try {
       const expenseData = {
-        userId: 'default-user',
+        userId: currentUser.uid,
         amount: parseFloat(formData.amount),
         category: formData.category === 'Other' ? formData.customCategory.trim() : formData.category,
         date: formData.date,

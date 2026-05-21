@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useAuth } from '../contexts/AuthContext';
 import { getUserExpenses, getUserBudgets, setBudget, getSpendingStats } from '../localStorage/firestore';
 import { CATEGORIES, CATEGORY_COLORS, CHART_TYPES, getCategoryColor } from '../utils/constants';
 import { formatCurrency, calculatePercentage, getBudgetFeedback } from '../utils/currencyUtils';
 import { getCurrentMonth, getDaysElapsedInMonth } from '../utils/dateUtils';
 
 const Stats = () => {
+  const { currentUser } = useAuth();
   const [expenses, setExpenses] = useState([]);
   const [budgets, setBudgets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,27 +27,28 @@ const Stats = () => {
 
   useEffect(() => {
     fetchData();
- }, []);
+  }, [currentUser]);
 
   const fetchData = async () => {
+    if (!currentUser) return;
 
     try {
       setLoading(true);
 
       // Fetch expenses
-      const expensesData = await getUserExpenses('default-user');
+      const expensesData = await getUserExpenses(currentUser.uid);
       setExpenses(expensesData);
 
       // Fetch budgets
       const currentMonth = getCurrentMonth();
-      const budgetsData = await getUserBudgets('default-user', currentMonth);
+      const budgetsData = await getUserBudgets(currentUser.uid, currentMonth);
       setBudgets(budgetsData);
 
       // Fetch spending stats
       const [todaySpent, weekSpent, monthSpent] = await Promise.all([
-        getSpendingStats('default-user', 'today'),
-        getSpendingStats('default-user', 'week'),
-        getSpendingStats('default-user', 'month')
+        getSpendingStats(currentUser.uid, 'today'),
+        getSpendingStats(currentUser.uid, 'week'),
+        getSpendingStats(currentUser.uid, 'month')
       ]);
 
       setStats({
@@ -158,7 +161,7 @@ const Stats = () => {
     try {
       const currentMonth = getCurrentMonth();
       await setBudget({
-        userId: 'default-user',
+        userId: currentUser.uid,
         category: budgetForm.category,
         monthlyLimit: parseFloat(budgetForm.amount),
         month: currentMonth
