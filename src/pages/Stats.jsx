@@ -315,7 +315,7 @@ const Stats = () => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percentage }) => `${name} ${percentage}%`}
+                    label={false}
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
@@ -327,6 +327,22 @@ const Stats = () => {
                   <Tooltip formatter={(value) => formatCurrency(value)} />
                 </PieChart>
               </ResponsiveContainer>
+
+              {/* Custom Legend */}
+              <div className="mt-4 space-y-2">
+                {categoryData.map((entry) => (
+                  <div key={entry.name} className="flex items-center justify-between text-sm">
+                    <div className="flex items-center space-x-2">
+                      <div
+                        className="w-4 h-4 rounded"
+                        style={{ backgroundColor: getCategoryColor(entry.name) }}
+                      />
+                      <span className="text-gray-700">{entry.name}</span>
+                    </div>
+                    <span className="font-medium text-gray-800">{entry.percentage}%</span>
+                  </div>
+                ))}
+              </div>
             </div>
           ) : (
             <div>

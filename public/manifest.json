@@ -1,7 +1,7 @@
 {
   "name": "Expense Tracker",
   "short_name": "ExpTrack",
-  "description": "A multi-user expense tracking web app with Firebase authentication",
+  "description": "A simple and intuitive expense tracking web app",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -22,6 +22,9 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["finance", "productivity"],
+  "categories": [
+    "finance",
+    "productivity"
+  ],
   "lang": "en"
 }
