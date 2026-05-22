@@ -5,6 +5,9 @@ const STORAGE_KEYS = {
   BUDGETS: 'expense_tracker_budgets',
 };
 
+// Hardcoded default user ID for non-authenticated app
+const DEFAULT_USER_ID = 'default-user';
+
 // Helper to get data from localStorage
 const getFromStorage = (key) => {
   try {
@@ -36,6 +39,7 @@ export const addExpense = async (expenseData) => {
   const newExpense = {
     id: generateId(),
     ...expenseData,
+    userId: DEFAULT_USER_ID,
     date: new Date(expenseData.date).toISOString(),
     createdAt: new Date().toISOString(),
   };
@@ -48,8 +52,8 @@ export const addExpense = async (expenseData) => {
 export const getUserExpenses = async (userId, filters = {}) => {
   let expenses = getFromStorage(STORAGE_KEYS.EXPENSES);
 
-  // Filter by user
-  expenses = expenses.filter(expense => expense.userId === userId);
+  // Filter by user (use hardcoded default user)
+  expenses = expenses.filter(expense => expense.userId === DEFAULT_USER_ID);
 
   // Apply category filter
   if (filters.category && filters.category !== 'all') {
@@ -86,10 +90,10 @@ export const getUserExpenses = async (userId, filters = {}) => {
 
 // Real-time listener simulation for user expenses
 export const subscribeToExpenses = (userId, callback, filters = {}) => {
-  console.log('subscribeToExpenses called with userId:', userId);
+  console.log('subscribeToExpenses called with default user');
 
   // Initial load
-  getUserExpenses(userId, filters).then(expenses => {
+  getUserExpenses(DEFAULT_USER_ID, filters).then(expenses => {
     console.log('Initial expenses loaded:', expenses);
     callback(expenses);
   }).catch(error => {
@@ -99,7 +103,7 @@ export const subscribeToExpenses = (userId, callback, filters = {}) => {
 
   // Poll for changes every 2 seconds
   const intervalId = setInterval(() => {
-    getUserExpenses(userId, filters).then(expenses => {
+    getUserExpenses(DEFAULT_USER_ID, filters).then(expenses => {
       console.log('Polling - expenses:', expenses.length);
       callback(expenses);
     }).catch(error => {
@@ -139,7 +143,7 @@ export const updateExpense = async (expenseId, updateData) => {
 // Set budget
 export const setBudget = async (budgetData) => {
   let budgets = getFromStorage(STORAGE_KEYS.BUDGETS);
-  const budgetId = `${budgetData.userId}_${budgetData.category}_${budgetData.month}`;
+  const budgetId = `${DEFAULT_USER_ID}_${budgetData.category}_${budgetData.month}`;
 
   // Remove existing budget for this category/month if it exists
   budgets = budgets.filter(b => b.id !== budgetId);
@@ -147,6 +151,7 @@ export const setBudget = async (budgetData) => {
   const newBudget = {
     id: budgetId,
     ...budgetData,
+    userId: DEFAULT_USER_ID,
     createdAt: new Date().toISOString(),
   };
 
@@ -158,7 +163,7 @@ export const setBudget = async (budgetData) => {
 export const getUserBudgets = async (userId, month) => {
   let budgets = getFromStorage(STORAGE_KEYS.BUDGETS);
   return budgets.filter(budget =>
-    budget.userId === userId && budget.month === month
+    budget.userId === DEFAULT_USER_ID && budget.month === month
   );
 };
 
@@ -185,6 +190,6 @@ export const getSpendingStats = async (userId, period) => {
       return 0;
   }
 
-  const expenses = await getUserExpenses(userId, { startDate, endDate });
+  const expenses = await getUserExpenses(DEFAULT_USER_ID, { startDate, endDate });
   return expenses.reduce((total, expense) => total + expense.amount, 0);
 };
